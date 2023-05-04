@@ -32,15 +32,13 @@
 #include "mzapo_regs.h"
 #include "utils.h"
 
-font_descriptor_t *fdes_sm;
-font_descriptor_t *fdes_big;
+#define GET_RIGHT_X(x) WIDTH - x;
 
 int main(int argc, char *argv[]) {
   // @INIT
   printf(INIT_MESSAGE);
 
   unsigned char *mem_base;
-  int i, j;
   application_t app;
   // settings
   app.settings.app_state = MAINMENU;
@@ -51,9 +49,9 @@ int main(int argc, char *argv[]) {
   // app.game.
 
   // frame_buffers
-  memset(app.frame_buffers.game_frame, 0, sizeof(unsigned char) * SIZE);
-  memset(app.frame_buffers.game_menu_frame, 0, sizeof(unsigned char) * SIZE);
-  memset(app.frame_buffers.main_menu_frame, 0, sizeof(unsigned char) * SIZE);
+  memset(app.frame_buffers.game_frame, 0, sizeof(unsigned short) * SIZE);
+  memset(app.frame_buffers.game_menu_frame, 0, sizeof(unsigned short) * SIZE);
+  memset(app.frame_buffers.main_menu_frame, 0, sizeof(unsigned short) * SIZE);
 
   // address book
   app.address_book.parlcd_membase =
@@ -69,45 +67,67 @@ int main(int argc, char *argv[]) {
   app.address_book.knobs =
       (volatile uint32_t *)(mem_base + SPILED_REG_KNOBS_8BIT_o);
 
-  fdes_sm = &font_rom8x16;
-  fdes_big = &font_winFreeSystem14x16;
+  // font descriptors
+  app.font_descriptors.small = &font_rom8x16;
+  app.font_descriptors.big = &font_winFreeSystem14x16;
 
   // init lcd display
   parlcd_hx8357_init(app.address_book.parlcd_membase);
 
   // LETSSS GOOO - Application running
-  unsigned short frame_buffer[320 * 480] = {0};
+  // unsigned short frame_buffer[320 * 480] = {0};
   parlcd_flush(app.address_book.parlcd_membase);
-  led_line_flush(app);
+  led_line_flush(&app);
+  printf("FLUSHED\n");
   sleep(1);
-  set_speed(app, SLOW);
+  set_speed(&app, SLOW);
 
+  /*
   // TODO DEBUG delete
   // are vertical
-  // TEST 1
+  // TEST 1 COMPLETE
   int ptr = 0;
-  for (i = 0; i < 320; i++) {
-    for (j = 0; j < 480; j++) {
-      if (i > 314)
-        frame_buffer[ptr++] = CYAN;
+  unsigned short color;
+  for (int x = 0; x < WIDTH; x++) {
+    for (int y = 0; y < HEIGHT; y++) {
+      int x_r = GET_RIGHT_X(x);
+      if (y > 460 && x_r < 80)
+        color = CYAN;
+      else if (y > 460 && x_r > 240)
+        color = PINK;
+      else if (y > 440 && x_r < 80)
+        color = ORANGE;
+      else if (y > 440 && x_r > 240)
+        color = SUNNY;
+      else if (y > 460 && (x_r > 120 || x_r < 180))
+        color = ACID;
+      else if (y > 400 && x_r > 240) {
+        color = LIGHT_PINK;
+      } else if (y > 400 && x_r < 80)
+        color = WHITE;
       else
-        frame_buffer[ptr++] = BG_COLOR;
+        color = BG_COLOR;
+      frame_buffer[ptr++] = color;
     }
   }
 
   // TEST 4 should check how chars are shown
-  draw_char(100, 100, 'a', FONT_COLOR, 2, frame_buffer, fdes_sm);
-  draw_string(100, 200, MAIN_MENU_TITLE, FONT_COLOR, 2, frame_buffer, fdes_big);
-  draw_string(100, 300, MAIN_MENU_NEW_GAME, FONT_COLOR, 1, frame_buffer,
-              fdes_sm);
-  write_to_file(frame_buffer);
+  // draw_char(100, 100, 'a', FONT_COLOR, 2, frame_buffer, fdes_sm);
+  parlcd_write_frame(app.address_book.parlcd_membase, frame_buffer);
+  // write_to_file(frame_buffer);
   printf("Written to file\n");
+  */
+  printf("Entering main menu state...\n");
+  main_menu_state(&app);
+  printf("Exiting main menu state...\n");
+  sleep(10);
+  goto clean;
 
   // TEST 5
   printf("Test SETSPEED Mode\n");
 
-  change_app_state(app, SETSPEED);
-  change_speed_state(app);
+  change_app_state(&app, SETSPEED);
+  change_speed_state(&app);
   printf("Test SETSPEED Over\n");
 
   /*
@@ -197,7 +217,8 @@ int main(int argc, char *argv[]) {
 
   // @EXIT
   // Cleaning
-  led_line_flush(app);
+clean:
+  led_line_flush(&app);
   parlcd_flush(app.address_book.parlcd_membase);
 
   printf(OUTPUT_MESSAGE);

@@ -3,9 +3,11 @@
  */
 #include "lcd_chars.h"
 
+#include <stdio.h>
+
 void draw_pixel(int x, int y, unsigned short color, unsigned short *frame) {
-  if (x >= 0 && x < 480 && y >= 0 && y < 320) {
-    frame[x + 320 * y] = color;
+  if (x >= 0 && x < 320 && y >= 0 && y < 480) {
+    frame[y + 480 * x] = color;
   }
 }
 
@@ -43,7 +45,7 @@ void draw_char(int x, int y, char ch, unsigned short color, int scale,
     int i, j;
     for (i = 0; i < fdes->height; i++) {
       font_bits_t val = *ptr;
-      for (j = 0; j < w; j++) {
+      for (j = w - 1; j != 0; j--) {
         if ((val & 0x8000) != 0) {
           draw_pixel_big(x + scale * j, y + scale * i, color, scale, frame);
         }
@@ -56,14 +58,38 @@ void draw_char(int x, int y, char ch, unsigned short color, int scale,
 
 void draw_string(int x, int y, char *str, unsigned short color, int scale,
                  unsigned short *frame, font_descriptor_t *fdes) {
-  char char_tmp = *str;
-  int ptr = 0;
   int offset = 0;
-  while (char_tmp != '\0') {
+  x = WIDTH - x;
+
+  unsigned int str_len = get_str_length(str);
+  for (int i = str_len - 1; i != -1; i--) {
+    char char_tmp = *(str + i);
     draw_char(x + offset, y, char_tmp, color, scale, frame, fdes);
 
     // update char_tmp
     offset += char_width(char_tmp, fdes) * scale;
+  }
+}
+
+unsigned int get_str_length(char *str) {
+  unsigned int length = 0;
+  char char_tmp = *(str);
+  while (char_tmp != '\0') {
+    char_tmp = *(str + ++length);
+  }
+  return length;
+}
+
+uint32_t get_sizes_str(char *str, int scale, font_descriptor_t *fdes) {
+  uint16_t width = 0, height = 0;
+  char char_tmp = *str;
+  int ptr = 0;
+
+  while (char_tmp != '\0') {
+    width += char_width(char_tmp, fdes) * scale;
     char_tmp = *(str + ++ptr);
   }
+  height += fdes->height * scale;
+
+  return (width << 16) | height;
 }
