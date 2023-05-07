@@ -25,14 +25,15 @@
 #define GAME_MENU_QUIT "Quit to Title"
 
 // strings of game frame. Smaller font will be used with scaling 1
-#define GAME_SCORE "Score"
 #define GAME_NEXT "Next"
-#define GAME_HELP "Help"
+#define GAME_TITLE "Tetris"
+#define GAME_OVER "GAME OVER"
 #define GAME_STATS "Stats"
 
 // Palette's defines
 #define BG_COLOR compress_rgb_color(0x22223b)
 #define FONT_COLOR compress_rgb_color(0xf2e9e4)
+#define RED compress_rgb_color(0xdc2f02)
 
 // figures' palette
 #define CYAN compress_rgb_color(0x70d6ff)

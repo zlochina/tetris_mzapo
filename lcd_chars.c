@@ -8,6 +8,8 @@
 void draw_pixel(int x, int y, unsigned short color, unsigned short *frame) {
   if (x >= 0 && x < 320 && y >= 0 && y < 480) {
     frame[y + 480 * x] = color;
+  } else {
+    printf("Given x is %d and y is %d\n", x, y);
   }
 }
 
@@ -92,4 +94,9 @@ uint32_t get_sizes_str(char *str, int scale, font_descriptor_t *fdes) {
   height += fdes->height * scale;
 
   return (width << 16) | height;
+}
+
+// find x_coord for central allignment
+uint16_t get_str_start(uint16_t str_width) {
+  return ((WIDTH + str_width) >> 1);
 }

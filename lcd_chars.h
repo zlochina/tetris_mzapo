@@ -18,3 +18,5 @@ void draw_string(int, int, char *, unsigned short, int, unsigned short *,
 unsigned int get_str_length(char *);
 
 uint32_t get_sizes_str(char *, int, font_descriptor_t *);
+
+uint16_t get_str_start(uint16_t);

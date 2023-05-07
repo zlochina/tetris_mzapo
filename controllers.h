@@ -1,3 +1,5 @@
+#ifndef __CONTROLLERS_H__
+#define __CONTROLLERS_H__
 #include <stdint.h>
 
 typedef struct {
@@ -18,3 +20,5 @@ uint8_t listen_to_knobs(uint32_t actual_knobs_value,
 /* returns non-zero values if any of the know was turned
  */
 uint8_t compare_knob_values(uint8_t old_value, uint8_t new_value);
+
+#endif  //__CONTROLLERS_H__

@@ -14,12 +14,8 @@
 #include <string.h>
 #include <time.h>
 
-// find x_coord for central allignment
-uint16_t get_str_start(uint16_t str_width) {
-  return ((WIDTH + str_width) >> 1);
-}
-
 void draw_main_menu_template(application_t *app) {
+  // TODO move "create background" to individual function
   // create background
   int ptr = 0;
   for (int i = 0; i < SIZE; i++) {
@@ -51,7 +47,7 @@ void draw_main_menu_template(application_t *app) {
               app->font_descriptors.big);
   offset_y += (str_sizes & 0xffff) + 10;
 
-  app->frame_buffers.main_menu_metadata.option_1_offset_y = offset_y;
+  app->frame_buffers.main_menu_metadata.option_1_offset_y = offset_y - 3;
   app->frame_buffers.main_menu_metadata.option_1_width = str_sizes >> 16;
   offset_y += 10;
 
@@ -62,7 +58,7 @@ void draw_main_menu_template(application_t *app) {
               app->font_descriptors.big);
   offset_y += (str_sizes & 0xffff) + 10;
 
-  app->frame_buffers.main_menu_metadata.option_2_offset_y = offset_y;
+  app->frame_buffers.main_menu_metadata.option_2_offset_y = offset_y - 3;
   app->frame_buffers.main_menu_metadata.option_2_width = str_sizes >> 16;
   offset_y += 10;
 
@@ -73,8 +69,68 @@ void draw_main_menu_template(application_t *app) {
               app->font_descriptors.big);
   offset_y += (str_sizes & 0xffff) + 10;
 
-  app->frame_buffers.main_menu_metadata.option_3_offset_y = offset_y;
+  app->frame_buffers.main_menu_metadata.option_3_offset_y = offset_y - 3;
   app->frame_buffers.main_menu_metadata.option_3_width = str_sizes >> 16;
+}
+
+void draw_game_menu_template(application_t *app) {
+  // create background
+  int ptr = 0;
+  for (int i = 0; i < SIZE; i++) {
+    app->frame_buffers.game_menu_frame[ptr++] = BG_COLOR;
+  }
+
+  font_descriptor_t *fdes_tmp = app->font_descriptors.big;
+  int offset_y = 40;
+  int offset_y_additional = 0;
+  int scale = 1;
+  int num_strings = 4;
+  char *str_array[] = {GAME_MENU_TITLE, GAME_MENU_CONTINUE, GAME_MENU_RESTART,
+                       GAME_MENU_QUIT};
+  // print strings with central allignment
+  // TODO copy this block to draw_main_menu_template
+  for (int i = 0; i < num_strings; i++) {
+    char *str_tmp = str_array[i];
+
+    // init some values
+    switch (i) {
+        // fdes_tmp is constant here
+      case (0):
+        // Title
+        scale = 4;
+        offset_y_additional = 60;
+        break;
+      case (1):
+        // non-Title
+        scale = 2;
+        offset_y_additional = 10;
+        break;
+    }
+
+    // draw string_tmp
+    uint32_t str_sizes = get_sizes_str(str_tmp, scale, fdes_tmp);
+    draw_string(get_str_start(str_sizes >> 16), offset_y, str_tmp, FONT_COLOR,
+                scale, app->frame_buffers.game_menu_frame, fdes_tmp);
+    offset_y += (str_sizes & 0xffff) + offset_y_additional;
+
+    // write metadata
+    switch (i) {
+      case (1):
+        app->frame_buffers.game_menu_metadata.option_1_offset_y = offset_y - 3;
+        app->frame_buffers.game_menu_metadata.option_1_width = str_sizes >> 16;
+        offset_y += 10;
+        break;
+      case (2):
+        app->frame_buffers.game_menu_metadata.option_2_offset_y = offset_y - 3;
+        app->frame_buffers.game_menu_metadata.option_2_width = str_sizes >> 16;
+        offset_y += 10;
+        break;
+      case (3):
+        app->frame_buffers.game_menu_metadata.option_3_offset_y = offset_y - 3;
+        app->frame_buffers.game_menu_metadata.option_3_width = str_sizes >> 16;
+        break;
+    }
+  }
 }
 
 void update_main_menu(application_t app) {
@@ -107,6 +163,38 @@ void update_main_menu(application_t app) {
   }
   parlcd_write_frame(app.address_book.parlcd_membase,
                      app.frame_buffers.main_menu_frame);
+}
+
+void update_game_menu(application_t app) {
+  frame_metadata_t metadata = app.frame_buffers.game_menu_metadata;
+  int width, offset_y;
+  int line_height = 4;
+  switch (app.settings.current_option) {
+    case FIRST:
+      width = metadata.option_1_width;
+      offset_y = metadata.option_1_offset_y;
+      break;
+    case SECOND:
+      width = metadata.option_2_width;
+      offset_y = metadata.option_2_offset_y;
+      break;
+    case THIRD:
+      width = metadata.option_3_width;
+      offset_y = metadata.option_3_offset_y;
+      break;
+    default:
+      return;
+  }
+
+  int start_point = (WIDTH - get_str_start(width)) * HEIGHT + offset_y;
+  for (int x = 0; x < line_height; x++) {
+    for (int y = 0; y < width; y++) {
+      int coord = start_point + y * HEIGHT + x;
+      app.frame_buffers.game_menu_frame[coord] = FONT_COLOR;
+    }
+  }
+  parlcd_write_frame(app.address_book.parlcd_membase,
+                     app.frame_buffers.game_menu_frame);
 }
 
 uint32_t increase_speed_value(uint32_t speed) {
@@ -195,6 +283,7 @@ void change_speed_state(application_t *app) {
 
 void main_menu_state(application_t *app) {
   address_book_t add_book = app->address_book;
+  // TODO create loop_delay function
   struct timespec loop_delay = {.tv_sec = 0, .tv_nsec = 100 * 1000 * 1000};
   uint32_t actual_knobs_value = *add_book.knobs;
   cached_knobs_t old_knobs_values;
@@ -205,10 +294,12 @@ void main_menu_state(application_t *app) {
   old_knobs_values.middle_button = (actual_knobs_value >> 8) & 0xff;
   old_knobs_values.bottom_button = actual_knobs_value & 0xff;
 
-  // create frame buffers
-  draw_main_menu_template(app);
+  // create frame buffer
+  if (app->frame_buffers.main_menu_frame[0] == 0) draw_main_menu_template(app);
+  // TODO delete next line
+  /*
   parlcd_write_frame(app->address_book.parlcd_membase,
-                     app->frame_buffers.main_menu_frame);
+                     app->frame_buffers.main_menu_frame);*/
   update_main_menu(*app);
   while (true) {
     // if nothing changed go to delay
@@ -223,15 +314,14 @@ void main_menu_state(application_t *app) {
         case FIRST:
           // "New Game" was clicked
           change_app_state(app, GAME);
-          // TODO start game state
-          break;
+          return;
         case SECOND:
           // "Set Speed" was clicked
           change_app_state(app, SETSPEED);
-          change_speed_state(app);
-          break;
+          return;
         case THIRD:
           // "Exit" was clicked
+          change_app_state(app, EXIT);
           return;
       }
     }
@@ -246,6 +336,74 @@ void main_menu_state(application_t *app) {
       choose_previous_option(app);
     }
     update_main_menu(*app);
+
+    // Update cached values
+    old_knobs_values.top_button = (actual_knobs_value >> 16) & 0xff;
+    old_knobs_values.middle_button = (actual_knobs_value >> 8) & 0xff;
+    old_knobs_values.bottom_button = actual_knobs_value & 0xff;
+
+  delay:
+    clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
+  }
+}
+
+void game_menu_state(application_t *app) {
+  address_book_t add_book = app->address_book;
+  // TODO create loop_delay function
+  struct timespec loop_delay = {.tv_sec = 0, .tv_nsec = 100 * 1000 * 1000};
+  uint32_t actual_knobs_value = *add_book.knobs;
+  cached_knobs_t old_knobs_values;
+
+  uint8_t clicks = 0;
+  uint8_t cached_state = 0;
+  old_knobs_values.top_button = (actual_knobs_value >> 16) & 0xff;
+  old_knobs_values.middle_button = (actual_knobs_value >> 8) & 0xff;
+  old_knobs_values.bottom_button = actual_knobs_value & 0xff;
+
+  // create frame buffer
+  if (app->frame_buffers.game_menu_frame[0] == 0) draw_game_menu_template(app);
+  // TODO delete next line
+  /*
+  parlcd_write_frame(app->address_book.parlcd_membase,
+                     app->frame_buffers.main_menu_frame);*/
+  update_game_menu(*app);
+  while (true) {
+    // if nothing changed go to delay
+    if (actual_knobs_value == *add_book.knobs) goto delay;
+
+    actual_knobs_value = *add_book.knobs;
+    clicks = actual_knobs_value >> 24;
+
+    // any button was clicked -> Proceed according to current_option
+    if ((clicks & 0x7) & ~cached_state) {
+      switch (app->settings.current_option) {
+        case FIRST:
+          // "Continue" was clicked
+          change_app_state(app, GAME);
+          return;
+        case SECOND:
+          // "Restart" was clicked
+          // TODO add some value that will indicate restarting or continuing
+          change_app_state(app, GAME);
+          return;
+        case THIRD:
+          // "Quit to Title" was clicked
+          change_app_state(app, MAINMENU);
+          app->settings.current_option = FIRST;
+          return;
+      }
+    }
+    cached_state = clicks;
+    uint8_t actions = listen_to_knobs(actual_knobs_value, old_knobs_values);
+
+    if (actions & 0x15) {
+      // turned clockwise
+      choose_next_option(app);
+    } else if (actions & 0x2a) {
+      // turned anti-clockwise
+      choose_previous_option(app);
+    }
+    update_game_menu(*app);
 
     // Update cached values
     old_knobs_values.top_button = (actual_knobs_value >> 16) & 0xff;

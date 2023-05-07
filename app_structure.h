@@ -1,10 +1,14 @@
+#ifndef __APP_STRUCTURE_H__
+#define __APP_STRUCTURE_H__
 #include <stdbool.h>
 #include <stdint.h>
 
 #include "constants.h"
+#include "figures.h"
 #include "font_types.h"
 
-enum states { MAINMENU = 10, GAMEMENU, GAME, SETSPEED };
+enum states { MAINMENU = 10, GAMEMENU, GAME, SETSPEED, EXIT };
+enum gamestate { PLAYABLE = 20, GAMEOVER, PAUSED };
 
 typedef struct {
   uint8_t app_state;
@@ -13,9 +17,35 @@ typedef struct {
 } game_settings_t;
 
 typedef struct {
+  uint16_t x;
+  uint16_t y;
+  uint16_t width;
+  uint16_t height;
+} section_t;
+
+typedef struct {
+  uint8_t x;
+  int8_t y;
+  uint8_t figure_state;
+  figure_t figure;
+} figure_position_t;
+
+typedef struct {
+  uint16_t field[23];  // only for computation, colors are in buffer
+  figure_position_t figure_pos;
+  figure_t next_figure;  // last 2 variables are saved only just for situation,
+                         // where user paused game
+} game_field_t;
+
+typedef struct {
   uint32_t score;
   uint32_t built_lines;
-  _Bool **game_field;
+  section_t tetris_section;
+  section_t next_section;
+  section_t stats_section;
+  game_field_t game_field;
+  figure_arr_t figure_arr;
+  uint8_t game_state;
 } game_t;
 
 typedef struct {
@@ -53,3 +83,5 @@ typedef struct {
   address_book_t address_book;
   font_des_t font_descriptors;
 } application_t;
+
+#endif  //__APP_STRUCTURE_H__
