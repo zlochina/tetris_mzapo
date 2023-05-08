@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 
 #include "constants.h"
 
@@ -77,4 +78,17 @@ int calculate_score(uint16_t built_lines, uint32_t speed) {
   }
 
   return built_lines * multiplicator * DEFAULT_SCORE_MUL;
+}
+
+void write_frame_bakcground(unsigned short* frame_buffer) {
+  // create background
+  int ptr = 0;
+  for (int i = 0; i < SIZE; i++) {
+    frame_buffer[ptr++] = BG_COLOR;
+  }
+}
+
+struct timespec create_delay(uint32_t msecs) {
+  struct timespec delay = {.tv_sec = 0, .tv_nsec = msecs * 1000 * 1000};
+  return delay;
 }

@@ -14,13 +14,10 @@
 #include <string.h>
 #include <time.h>
 
+#include "utils.h"
+
 void draw_main_menu_template(application_t *app) {
-  // TODO move "create background" to individual function
-  // create background
-  int ptr = 0;
-  for (int i = 0; i < SIZE; i++) {
-    app->frame_buffers.main_menu_frame[ptr++] = BG_COLOR;
-  }
+  write_frame_bakcground(app->frame_buffers.main_menu_frame);
 
   // print strings with central allignment
   int offset_y = 40;
@@ -72,11 +69,7 @@ void draw_main_menu_template(application_t *app) {
 }
 
 void draw_game_menu_template(application_t *app) {
-  // create background
-  int ptr = 0;
-  for (int i = 0; i < SIZE; i++) {
-    app->frame_buffers.game_menu_frame[ptr++] = BG_COLOR;
-  }
+  write_frame_bakcground(app->frame_buffers.game_menu_frame);
 
   font_descriptor_t *fdes_tmp = app->font_descriptors.big;
   int offset_y = 40;
@@ -86,7 +79,6 @@ void draw_game_menu_template(application_t *app) {
   char *str_array[] = {GAME_MENU_TITLE, GAME_MENU_CONTINUE, GAME_MENU_RESTART,
                        GAME_MENU_QUIT};
   // print strings with central allignment
-  // TODO copy this block to draw_main_menu_template
   for (int i = 0; i < num_strings; i++) {
     char *str_tmp = str_array[i];
 
@@ -246,7 +238,7 @@ void change_app_state(application_t *app, uint8_t to_state) {
 
 void change_speed_state(application_t *app) {
   address_book_t add_book = app->address_book;
-  struct timespec loop_delay = {.tv_sec = 0, .tv_nsec = 100 * 1000 * 1000};
+  struct timespec loop_delay = create_delay(100);
   uint32_t actual_knobs_value = *add_book.knobs;
   uint32_t led_line_val = *add_book.led_line;
   cached_knobs_t old_knobs_values;
@@ -293,8 +285,7 @@ void change_speed_state(application_t *app) {
 
 void main_menu_state(application_t *app) {
   address_book_t add_book = app->address_book;
-  // TODO create loop_delay function
-  struct timespec loop_delay = {.tv_sec = 0, .tv_nsec = 100 * 1000 * 1000};
+  struct timespec loop_delay = create_delay(100);
   uint32_t actual_knobs_value = *add_book.knobs;
   cached_knobs_t old_knobs_values;
 
@@ -357,8 +348,7 @@ void main_menu_state(application_t *app) {
 
 void game_menu_state(application_t *app) {
   address_book_t add_book = app->address_book;
-  // TODO create loop_delay function
-  struct timespec loop_delay = {.tv_sec = 0, .tv_nsec = 100 * 1000 * 1000};
+  struct timespec loop_delay = create_delay(100);
   uint32_t actual_knobs_value = *add_book.knobs;
   cached_knobs_t old_knobs_values;
 
@@ -389,7 +379,6 @@ void game_menu_state(application_t *app) {
           return;
         case SECOND:
           // "Restart" was clicked
-          // TODO add some value that will indicate restarting or continuing
           change_app_state(app, GAME);
           return;
         case THIRD:
@@ -429,7 +418,6 @@ void choose_next_option(application_t *app) {
     default:
       app->settings.current_option = THIRD;
   }
-  // TODO based on option draw underline for option
 }
 
 void choose_previous_option(application_t *app) {
@@ -440,5 +428,4 @@ void choose_previous_option(application_t *app) {
     default:
       app->settings.current_option = FIRST;
   }
-  // TODO based on option draw underline for option
 }

@@ -114,7 +114,6 @@ int main(int argc, char *argv[]) {
         break;
       case (GAME):
         printf("Entering game state...\n");
-        // TODO for now just exiting
         game_state(&app);
         printf("Exiting game state...\n");
         break;

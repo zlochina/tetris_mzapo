@@ -10,7 +10,7 @@ LDLIBS += -lrt -lpthread
 #LDLIBS += -lm
 
 SOURCES = main.c mzapo_phys.c mzapo_parlcd.c serialize_lock.c lcd_chars.c converters.c utils.c
-SOURCES += font_prop14x16.c font_rom8x16.c controllers.c figures.c game.c menu.c
+SOURCES += font_prop14x16.c font_rom8x16.c controllers.c figures.c game.c menu.c game_mechanics.c
 TARGET_EXE = main
 #TARGET_IP ?= 192.168.223.201
 ifeq ($(TARGET_IP),)
