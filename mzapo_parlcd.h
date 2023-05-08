@@ -33,8 +33,14 @@ void parlcd_delay(int msec);
 
 void parlcd_hx8357_init(unsigned char *parlcd_mem_base);
 
+/* function to write frame_buffer of size 320X480 to lcd display
+ * @author: Vladyslav Zlochevskyi
+ */
 void parlcd_write_frame(unsigned char *parlcd_mem_base, unsigned short *frame);
 
+/* function to write zeros to lcd display of size 320X480
+ * @author: Vladyslav Zlochevskyi
+ */
 void parlcd_flush(unsigned char *parlcd_mem_base);
 
 #ifdef __cplusplus

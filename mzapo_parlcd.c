@@ -49,17 +49,14 @@ void parlcd_delay(int msec) {
 
 void parlcd_write_frame(unsigned char *parlcd_mem_base, unsigned short *frame) {
   parlcd_write_cmd(parlcd_mem_base, 0x2c);
-  for (int i = 0; i < WIDTH; i++) {
-    int i_base = i * HEIGHT;
-    for (int j = 0; j < HEIGHT; j++) {
-      parlcd_write_data(parlcd_mem_base, *(frame + i_base + j));
-    }
+  for (int j = 0; j < SIZE; j++) {
+    parlcd_write_data(parlcd_mem_base, *(frame + j));
   }
 }
 
 void parlcd_flush(unsigned char *parlcd_mem_base) {
   parlcd_write_cmd(parlcd_mem_base, 0x2c);
-  for (int i = 0; i < WIDTH * HEIGHT; i++) {
+  for (int i = 0; i < SIZE; i++) {
     parlcd_write_data(parlcd_mem_base, 0);
   }
 }

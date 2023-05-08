@@ -1,5 +1,6 @@
 /* Most of the functions were taken from one of the examples of working with
  * MZ_APO device on the page of APO subject in FEL courseware
+ * BUT there are functions which are written by @author of the project
  */
 #include "lcd_chars.h"
 

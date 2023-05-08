@@ -3,6 +3,8 @@
  *
  * Width and height for the figures will be 4 x 4 bits
  * which then will be scaled by 5 so the final width would be 20 pixels
+ *
+ * @author: Vladyslav Zlochevskyi
  */
 
 #include "figures.h"

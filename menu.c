@@ -1,10 +1,9 @@
 /*
  * @author: zlochvla (Vladyslav Zlochevskyi)
  * This file is responsible for creating and manipulating menu states
- * Take a notice that there are duplicates of implementation of knobs'
- * listeners, The reason why they are not integrated as individual modules is
- * that calling potential listener functions could take too much resources, so
- * in order for application to be faster they are structured like that
+ * Take a notice that there are duplicates of implementation of menus while
+ * loops This could be exaplained by implementation of different actions each of
+ * the menus
  */
 #include "menu.h"
 
@@ -236,6 +235,29 @@ void change_app_state(application_t *app, uint8_t to_state) {
   app->settings.app_state = to_state;
 }
 
+void choose_next_option(application_t *app) {
+  switch (app->settings.current_option) {
+    case FIRST:
+      app->settings.current_option = SECOND;
+      break;
+    default:
+      app->settings.current_option = THIRD;
+  }
+}
+
+void choose_previous_option(application_t *app) {
+  switch (app->settings.current_option) {
+    case THIRD:
+      app->settings.current_option = SECOND;
+      break;
+    default:
+      app->settings.current_option = FIRST;
+  }
+}
+
+// Below are alternative main implementations each of the app states, excluding
+// GAME state and EXIT state
+
 void change_speed_state(application_t *app) {
   address_book_t add_book = app->address_book;
   struct timespec loop_delay = create_delay(100);
@@ -407,25 +429,5 @@ void game_menu_state(application_t *app) {
 
   delay:
     clock_nanosleep(CLOCK_MONOTONIC, 0, &loop_delay, NULL);
-  }
-}
-
-void choose_next_option(application_t *app) {
-  switch (app->settings.current_option) {
-    case FIRST:
-      app->settings.current_option = SECOND;
-      break;
-    default:
-      app->settings.current_option = THIRD;
-  }
-}
-
-void choose_previous_option(application_t *app) {
-  switch (app->settings.current_option) {
-    case THIRD:
-      app->settings.current_option = SECOND;
-      break;
-    default:
-      app->settings.current_option = FIRST;
   }
 }

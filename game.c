@@ -268,6 +268,12 @@ void game_state(application_t *app) {
       flags |= LEFT_MOVEMENT;
     }
 
+    // figure vertical movement
+    if (actions & 0x1) {
+      // bottom rotation clockwise
+      flags |= FALL_A_ROW;
+    }
+
     // Update cached values
     old_knobs_values.top_button = (actual_knobs_value >> 16) & 0xff;
     old_knobs_values.middle_button = (actual_knobs_value >> 8) & 0xff;
