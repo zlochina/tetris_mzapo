@@ -30,6 +30,10 @@
 #define GAME_OVER "GAME OVER"
 #define GAME_STATS "Stats"
 
+// strings of stats section of game frame
+#define SCORE "Score: "
+#define BUILT_LINES "Lines: "
+
 // Palette's defines
 #define BG_COLOR compress_rgb_color(0x22223b)
 #define FONT_COLOR compress_rgb_color(0xf2e9e4)
@@ -49,6 +53,9 @@
 #define MEDIUM 0xffff
 #define FAST 0xffffff
 #define FASTEST 0xffffffff
+
+// score multiplicator
+#define DEFAULT_SCORE_MUL 40
 
 // WIDTH AND HEIGHT OF THE LCD WINDOW
 #define WIDTH 320

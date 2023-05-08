@@ -20,6 +20,11 @@ void update_main_menu(application_t app);
 
 void update_game_menu(application_t app);
 
+void print_line(application_t app, unsigned short* frame_buffer, int width,
+                int offset_y, int line_height);
+
+void print_line_speed_mode(application_t app);
+
 void led_line_flush(application_t* app);
 
 void set_speed(application_t* app, uint32_t speed);

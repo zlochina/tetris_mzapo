@@ -14,6 +14,8 @@ typedef struct {
   uint8_t app_state;
   uint32_t speed;
   uint8_t current_option;
+  _Bool continue_clicked;
+  uint32_t high_score;
 } game_settings_t;
 
 typedef struct {
@@ -24,7 +26,7 @@ typedef struct {
 } section_t;
 
 typedef struct {
-  uint8_t x;
+  int8_t x;
   int8_t y;
   uint8_t figure_state;
   figure_t figure;
@@ -38,7 +40,6 @@ typedef struct {
 } game_field_t;
 
 typedef struct {
-  uint32_t score;
   uint32_t built_lines;
   section_t tetris_section;
   section_t next_section;
@@ -63,6 +64,7 @@ typedef struct {
   unsigned short main_menu_frame[SIZE];
   frame_metadata_t main_menu_metadata;
   unsigned short game_frame[SIZE];
+  frame_metadata_t game_metadata;
 } frame_buffers_t;
 
 typedef struct {

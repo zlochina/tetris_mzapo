@@ -32,21 +32,21 @@ uint8_t fig_T[] = {
      * 1110
      * 0000
      */
-    0x02, 0x06, 0x02, 0x00,
+    0x00, 0x02, 0x06, 0x02,
     /* T looking left
+     * 0000
      * 0010
      * 0110
      * 0010
-     * 0000
      */
-    0x0e, 0x04, 0x00, 0x00,
+    0x00, 0x0e, 0x04, 0x00,
     /* normal looking T
+     * 0000
      * 1110
      * 0100
      * 0000
-     * 0000
      */
-    0x08, 0x0c, 0x08, 0x00,
+    0x00, 0x08, 0x0c, 0x08,
     /* T looking right
      * 1000
      * 1100
@@ -180,7 +180,7 @@ void array_copy(uint8_t *dest, uint8_t source[], uint32_t nmemb) {
     *(dest + i) = source[i];
   }
 }
-// TODO init figure structures and pass them to main function
+
 figure_arr_t init_figures() {
   figure_S.num_states = 4;
   figure_S.color = CYAN;

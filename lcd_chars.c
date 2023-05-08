@@ -8,8 +8,6 @@
 void draw_pixel(int x, int y, unsigned short color, unsigned short *frame) {
   if (x >= 0 && x < 320 && y >= 0 && y < 480) {
     frame[y + 480 * x] = color;
-  } else {
-    printf("Given x is %d and y is %d\n", x, y);
   }
 }
 

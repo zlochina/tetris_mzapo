@@ -53,12 +53,11 @@ int main(int argc, char *argv[]) {
   unsigned char *mem_base;
   application_t app;
   // settings
-  app.settings.app_state = GAME;
-  app.settings.speed = FASTEST;
+  app.settings.app_state = MAINMENU;
+  app.settings.speed = SLOW;
   app.settings.current_option = FIRST;
-
-  // game
-  // app.game.
+  app.settings.continue_clicked = false;
+  app.settings.high_score = 0;
 
   // frame_buffers
   memset(app.frame_buffers.game_frame, 0, sizeof(unsigned short) * SIZE);
@@ -120,9 +119,9 @@ int main(int argc, char *argv[]) {
         printf("Exiting game state...\n");
         break;
       case (GAMEMENU):
-        printf("Entering game state...\n");
+        printf("Entering game menu state...\n");
         game_menu_state(&app);
-        printf("Exiting game state...\n");
+        printf("Exiting game menu state...\n");
         break;
       case (EXIT):
         printf("Exit state was requested\n");
@@ -133,10 +132,9 @@ int main(int argc, char *argv[]) {
 
   // @EXIT
   // Cleaning
-clean:
   clean(app);
   free_fig_mem();
-  print_meme(app);
+  // print_meme(app);
 
   printf(OUTPUT_MESSAGE);
   return 0;

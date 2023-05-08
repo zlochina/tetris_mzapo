@@ -1,14 +1,16 @@
 #include "controllers.h"
 
+#include <stdlib.h>
+
 uint8_t compare_knob_values(uint8_t old_value, uint8_t new_value) {
   int sub = new_value - old_value;
 
   // threshold for checking the aim is 128
   // knob rotation
-  if (sub == 0) {
+  if (sub == 0 || abs(sub) < 2) {
     // not changed
     return 0;
-  } else if (sub > 0 && sub < 128 || sub < -128) {
+  } else if ((sub > 0 && sub < 128) || sub < -128) {
     // turning right
     return 0x1;
   } else {

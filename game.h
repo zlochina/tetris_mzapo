@@ -37,6 +37,8 @@ section_t print_game_section(section_t draw_section, application_t *app,
 void print_sections(application_t *app, unsigned short color,
                     char *tetris_section_str);
 
+void update_stats_section(application_t *app);
+
 void clean_section(application_t *app, section_t section, unsigned short color);
 
 void game_state(application_t *app);
@@ -52,4 +54,10 @@ _Bool is_possible_figure_position(figure_position_t new_fig_pos,
 
 _Bool is_game_possible(game_field_t game_field);
 
+void shift_game_field_array(application_t *app, uint8_t full_line_pos);
+
 void update_game_field_array(application_t *app);
+
+void clean_lines(application_t *app);
+
+void shift_game_frame_buffer(application_t *app, uint8_t full_line_pos);

@@ -1,7 +1,9 @@
 #include "utils.h"
 
-#include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
+
+#include "constants.h"
 
 #define TEST_OUTPUT "output.ppm"
 
@@ -45,4 +47,34 @@ void write_to_file(unsigned short frame[]) {
 
   // close
   fclose(file);
+}
+
+char* convert_int_to_str(int num) {
+  int num_length = 1;
+  int num_tmp = num;
+  // calculate num length
+  while (num_tmp) {
+    num_tmp /= 10;
+    num_length++;
+  }
+
+  char* str;
+  str = (char*)malloc(sizeof(char) * num_length);
+  if (str == NULL) exit(1);
+
+  // convert
+  sprintf(str, "%d", num);
+
+  return str;
+}
+
+int calculate_score(uint16_t built_lines, uint32_t speed) {
+  int multiplicator = 0;
+
+  while (speed) {
+    speed >>= 8;
+    multiplicator++;
+  }
+
+  return built_lines * multiplicator * DEFAULT_SCORE_MUL;
 }

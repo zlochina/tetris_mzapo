@@ -29,16 +29,14 @@ void draw_main_menu_template(application_t *app) {
   draw_string(get_str_start(str_sizes >> 16), offset_y, MAIN_MENU_TITLE,
               FONT_COLOR, 6, app->frame_buffers.main_menu_frame,
               app->font_descriptors.big);
-  offset_y += (str_sizes & 0xffff) + 20;  // TODO below
-  offset_y =
-      156;  // OVERWRITE, if I want to add animation of title going up and down
+  offset_y += (str_sizes & 0xffff) + 20;
 
   // 2nd string
   str_sizes = get_sizes_str(CURRENT_HIGH_SCORE, 1, app->font_descriptors.small);
   draw_string(get_str_start(str_sizes >> 16), offset_y, CURRENT_HIGH_SCORE,
               FONT_COLOR, 1, app->frame_buffers.main_menu_frame,
               app->font_descriptors.small);
-  offset_y += (str_sizes & 0xffff) + 40;
+  offset_y += (str_sizes & 0xffff) + 30;
 
   // 3rd string
   str_sizes = get_sizes_str(MAIN_MENU_NEW_GAME, 2, app->font_descriptors.big);
@@ -136,7 +134,6 @@ void draw_game_menu_template(application_t *app) {
 void update_main_menu(application_t app) {
   frame_metadata_t metadata = app.frame_buffers.main_menu_metadata;
   int width, offset_y;
-  int line_height = 4;
   switch (app.settings.current_option) {
     case FIRST:
       width = metadata.option_1_width;
@@ -154,15 +151,17 @@ void update_main_menu(application_t app) {
       return;
   }
 
-  int start_point = (WIDTH - get_str_start(width)) * HEIGHT + offset_y;
-  for (int x = 0; x < line_height; x++) {
-    for (int y = 0; y < width; y++) {
-      int coord = start_point + y * HEIGHT + x;
-      app.frame_buffers.main_menu_frame[coord] = FONT_COLOR;
-    }
-  }
-  parlcd_write_frame(app.address_book.parlcd_membase,
-                     app.frame_buffers.main_menu_frame);
+  // print current high score
+  char *high_score = convert_int_to_str(app.settings.high_score);
+  int str_sizes = get_sizes_str(high_score, 1, app.font_descriptors.small);
+  draw_string(get_str_start(str_sizes >> 16),
+              app.frame_buffers.main_menu_metadata.option_1_offset_y - 68,
+              high_score, FONT_COLOR, 1, app.frame_buffers.main_menu_frame,
+              app.font_descriptors.small);
+
+  int line_height = 4;
+  print_line(app, app.frame_buffers.main_menu_frame, width, offset_y,
+             line_height);
 }
 
 void update_game_menu(application_t app) {
@@ -186,15 +185,26 @@ void update_game_menu(application_t app) {
       return;
   }
 
+  print_line(app, app.frame_buffers.game_menu_frame, width, offset_y,
+             line_height);
+}
+
+void print_line(application_t app, unsigned short *frame_buffer, int width,
+                int offset_y, int line_height) {
   int start_point = (WIDTH - get_str_start(width)) * HEIGHT + offset_y;
   for (int x = 0; x < line_height; x++) {
     for (int y = 0; y < width; y++) {
       int coord = start_point + y * HEIGHT + x;
-      app.frame_buffers.game_menu_frame[coord] = FONT_COLOR;
+      frame_buffer[coord] = FONT_COLOR;
     }
   }
-  parlcd_write_frame(app.address_book.parlcd_membase,
-                     app.frame_buffers.game_menu_frame);
+  parlcd_write_frame(app.address_book.parlcd_membase, frame_buffer);
+}
+
+void print_line_speed_mode(application_t app) {
+  print_line(app, app.frame_buffers.main_menu_frame,
+             app.frame_buffers.main_menu_metadata.option_2_width,
+             app.frame_buffers.main_menu_metadata.option_2_offset_y, 8);
 }
 
 uint32_t increase_speed_value(uint32_t speed) {
@@ -296,10 +306,7 @@ void main_menu_state(application_t *app) {
 
   // create frame buffer
   if (app->frame_buffers.main_menu_frame[0] == 0) draw_main_menu_template(app);
-  // TODO delete next line
-  /*
-  parlcd_write_frame(app->address_book.parlcd_membase,
-                     app->frame_buffers.main_menu_frame);*/
+
   update_main_menu(*app);
   while (true) {
     // if nothing changed go to delay
@@ -318,6 +325,7 @@ void main_menu_state(application_t *app) {
         case SECOND:
           // "Set Speed" was clicked
           change_app_state(app, SETSPEED);
+          print_line_speed_mode(*app);
           return;
         case THIRD:
           // "Exit" was clicked
@@ -362,10 +370,7 @@ void game_menu_state(application_t *app) {
 
   // create frame buffer
   if (app->frame_buffers.game_menu_frame[0] == 0) draw_game_menu_template(app);
-  // TODO delete next line
-  /*
-  parlcd_write_frame(app->address_book.parlcd_membase,
-                     app->frame_buffers.main_menu_frame);*/
+
   update_game_menu(*app);
   while (true) {
     // if nothing changed go to delay
@@ -380,6 +385,7 @@ void game_menu_state(application_t *app) {
         case FIRST:
           // "Continue" was clicked
           change_app_state(app, GAME);
+          app->settings.continue_clicked = true;
           return;
         case SECOND:
           // "Restart" was clicked
