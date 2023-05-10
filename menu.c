@@ -153,6 +153,8 @@ void update_main_menu(application_t app) {
   int line_height = 4;
   print_line(app, app.frame_buffers.main_menu_frame, width, offset_y,
              line_height);
+
+  free(high_score);
 }
 
 void update_game_menu(application_t app) {
