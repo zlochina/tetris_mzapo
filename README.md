@@ -27,7 +27,7 @@ make
 4. Run the game with the following command (Replace "xxx" with actual IP of MZAPO device):
 
 ```
-TARGET_IP=192.168.223.xxx make run
+make TARGET_IP=192.168.223.xxx run
 ```
 
 ## User Manual
