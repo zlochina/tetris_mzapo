@@ -3,6 +3,7 @@
  * by lcd display
  */
 #include <stdint.h>
+
 unsigned short compress_rgb_color(unsigned int);
 
 char *convert_int_to_str(int num);

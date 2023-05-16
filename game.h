@@ -6,6 +6,7 @@
 #include "app_structure.h"
 #include "constants.h"
 #include "controllers.h"
+#include "game_mechanics.h"
 #include "menu.h"
 
 // defines of flags

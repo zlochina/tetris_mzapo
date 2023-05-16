@@ -2,11 +2,6 @@
 
 #include <stdio.h>
 
-#include "app_structure.h"
-#include "game_mechanics.h"
-#include "mzapo_parlcd.h"
-#include "utils.h"
-
 section_t print_game_section(section_t draw_section, application_t *app,
                              char *str, unsigned short color) {
   section_t section_out;

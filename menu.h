@@ -8,7 +8,6 @@
 #include "controllers.h"
 #include "lcd_chars.h"
 #include "mzapo_parlcd.h"
-// #include "game.h"
 
 enum options { FIRST, SECOND, THIRD };
 
