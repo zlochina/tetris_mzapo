@@ -2,6 +2,9 @@
 
 This is a Tetris game written in C language for MZAPO.
 
+![Tetris main menu](https://s3.eu-west-2.amazonaws.com/zlochinus.aws.bucket/public+access/github_pics/IMG_2156.jpg)
+![Tetris gameplay window](https://s3.eu-west-2.amazonaws.com/zlochinus.aws.bucket/public+access/github_pics/IMG_2154.jpg)
+
 ## Installation
 
 To install and run the game, follow these steps:
@@ -9,13 +12,13 @@ To install and run the game, follow these steps:
 1. Clone the repository to node connected to inner network of FEL:
 
 ```
-git clone https://gitlab.fel.cvut.cz/B222_B0B35APO/zlochvla
+git clone https://github.com/zlochina/tetris_mzapo
 ```
 
-2. Navigate to the `zlochvla` directory:
+2. Navigate to the `tetris_mzapo` directory:
 
 ```
-cd zlochvla
+cd tetris_mzapo
 ```
 
 3. Compile the game using the following command:
@@ -24,10 +27,10 @@ cd zlochvla
 make
 ```
 
-4. Run the game with the following command (Replace "xxx" with actual IP of MZAPO device):
+4. Run the game with the following command (Replace "xxx.xxx.xxx.xxx" with actual IP of MZAPO device):
 
 ```
-make TARGET_IP=192.168.223.xxx run
+make TARGET_IP=xxx.xxx.xxx.xxx run
 ```
 
 ## User Manual
@@ -130,4 +133,4 @@ The above dependencies show which files are needed for each header file to funct
 
 ## Credits
 
-The game was created by Vladyslav Zlochevskyi (zlochvla) as a semestral project for FEL CVUT. Special thanks to the creators of the MZAPO device for providing the necessary tools to create this game, including some of the mentioned files.
+The game was created by Vladyslav Zlochevskyi (zlochina) as a semestral project for FEE CTU. Special thanks to the creators of the MZAPO device for providing the necessary tools to create this game, including some of the mentioned files.
